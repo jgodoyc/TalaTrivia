@@ -14,7 +14,4 @@ venv/
 ENV/
 env/
 
-docker-compose.yml
-Dockerfile
-
 .vscode/

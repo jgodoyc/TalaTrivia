@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    container_name: app
+    ports:
+      - "5000:5000"
+    links:
+      - db
+    networks:
+      - mired
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+  db:
+    image: mysql:8.0
+    restart: always
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./app/bd/bd.sql:/docker-entrypoint-initdb.d/bd.sql
+      - db_data:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - mired
+
+networks:
+  mired:
+
+volumes:
+  db_data:
