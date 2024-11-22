@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'jugador') NOT NULL DEFAULT 'jugador'
+    role ENUM('admin', 'player') NOT NULL DEFAULT 'jugador'
 );
 
 CREATE TABLE IF NOT EXISTS questions (
@@ -68,33 +68,33 @@ CREATE TABLE IF NOT EXISTS user_scores (
 );
 
 
-INSERT INTO users (name, email) VALUES ('John Doe', 'john.doe@example.com');
+INSERT INTO users (name, email, password, role) VALUES ('Chiki', 'admin@example.com', 'admin', 'admin');
+INSERT INTO users (name, email, password, role) VALUES ('jebus', 'jebus@example.com', 'root', 'player');
 
 
 INSERT INTO questions (question, difficulty) VALUES 
-('What is the capital of France?', 'easy'),
-('What is the square root of 144?', 'medium'),
-('Explain the theory of relativity.', 'hard');
+('¿Cual es la capital de Chile?', 'easy'),
+('¿Cuanto es la raiz cuadrada de 144?', 'medium'),
+('¿Quien explica la teoría de la relatividad?', 'hard');
 
 
 INSERT INTO options (question_id, option_text, is_correct) VALUES 
-(1, 'Paris', TRUE),
-(1, 'London', FALSE),
-(1, 'Berlin', FALSE),
-(1, 'Madrid', FALSE),
+(1, 'Santiago', TRUE),
+(1, 'Valdivia', FALSE),
+(1, 'Lima', FALSE),
+(1, 'Buenos Aires', FALSE),
 
 (2, '10', FALSE),
 (2, '12', TRUE),
 (2, '14', FALSE),
 (2, '16', FALSE),
 
-(3, 'It is a theory by Einstein', TRUE),
-(3, 'It is a theory by Newton', FALSE),
-(3, 'It is a theory by Galileo', FALSE),
-(3, 'It is a theory by Tesla', FALSE);
+(3, 'Es una teoria de Einstein', TRUE),
+(3, 'Es una teoria de Newton', FALSE),
+(3, 'Es una teoria de Galileo', FALSE),
+(3, 'Es una teoria de Tesla', FALSE);
 
-
-INSERT INTO trivias (name, description) VALUES ('General Knowledge', 'A trivia to test your general knowledge.');
+INSERT INTO trivias (name, description) VALUES ('Conocimientos generales', 'Una trivia para probar tus conocimientos generales.');
 
 
 INSERT INTO trivia_questions (trivia_id, question_id) VALUES 
