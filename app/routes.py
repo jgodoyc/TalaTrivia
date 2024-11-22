@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from .db import connection as get_connection
+from .auth import generate_token, token_required
 
 api = Blueprint('api', __name__)
 
@@ -19,8 +20,30 @@ def test_db():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@api.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id, email FROM users WHERE email = %s AND password = %s", (email, password))
+            user = cursor.fetchone()
+        connection.close()
+        
+        if user:
+            token = generate_token(user['id'])
+            return jsonify({'token': token}), 200
+        else:
+            return jsonify({'message': 'Invalid credentials'}), 401
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @api.route("/users", methods=["GET"])
-def list_users():
+@token_required
+def list_users(current_user):
     try:
         connection = get_connection()
         with connection.cursor() as cursor:
@@ -30,16 +53,18 @@ def list_users():
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 @api.route("/users", methods=["POST"])
-def create_user():
+@token_required
+def create_user(current_user):
     data = request.get_json()
     name = data.get('name')
     email = data.get('email')
+    role = data.get('role', 'jugador')
     try:
         connection = get_connection()
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO users (name, email) VALUES (%s, %s)", (name, email))
+            cursor.execute("INSERT INTO users (name, email, role) VALUES (%s, %s, %s)", (name, email, role))
             connection.commit()
         connection.close()
         return jsonify({"message": "Usuario creado exitosamente"}), 201
