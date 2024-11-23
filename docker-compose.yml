@@ -22,6 +22,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DB}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_CHARSET: utf8mb4
     ports:
       - "3306:3306"
     volumes:
@@ -31,6 +32,15 @@ services:
       - .env
     networks:
       - mired
+  #frontend:
+  #  build:
+  #    context: ./frontend
+  #    dockerfile: Dockerfile
+  #  container_name: frontend
+  #  ports:
+  #    - "3000:80"
+  #  networks:
+  #    - mired
 
 networks:
   mired:

@@ -9,7 +9,7 @@ DB_USER = os.getenv('MYSQL_USER')
 DB_PASSWORD = os.getenv('MYSQL_PASSWORD')
 DB_NAME = os.getenv('MYSQL_DB')
 DB_PORT = int(os.getenv('MYSQL_PORT'))
-DB_CHARSET = os.getenv('MYSQL_CHARSET')
+DB_CHARSET = os.getenv('MYSQL_DATABASE_CHARSET')
 
 def connection():
     """Crea y devuelve una conexión a la base de datos MySQL."""

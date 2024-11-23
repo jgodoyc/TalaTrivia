@@ -1,8 +1,21 @@
 from flask import Blueprint, jsonify, request
-from .db import connection as get_connection
 from .auth import generate_token, token_required
+from .db import connection as get_connection
+from .services import (
+    get_all_users, create_new_user, get_all_questions, create_new_question,
+    get_all_trivias, get_trivia_questions, create_new_trivia, submit_user_answers,
+    get_trivia_ranking
+)
+import logging
+
+# Configurar el logger
+logging.basicConfig(level=logging.INFO)
 
 api = Blueprint('api', __name__)
+
+def after_request(response):
+    response.headers['Content-Type'] = 'application/json; charset=utf-8'
+    return response
 
 @api.route("/", methods=["GET"])
 def root():
@@ -34,8 +47,8 @@ def login():
         connection.close()
         
         if user:
-            token = generate_token(user['id'])
-            return jsonify({'token': token}), 200
+            token = generate_token(user['id']) 
+            return jsonify({'token': token, 'userId': user['id']}), 200
         else:
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
@@ -45,11 +58,7 @@ def login():
 @token_required
 def list_users(current_user):
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM users")
-            result = cursor.fetchall()
-        connection.close()
+        result = get_all_users()
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -62,11 +71,7 @@ def create_user(current_user):
     email = data.get('email')
     role = data.get('role', 'jugador')
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO users (name, email, role) VALUES (%s, %s, %s)", (name, email, role))
-            connection.commit()
-        connection.close()
+        create_new_user(name, email, role)
         return jsonify({"message": "Usuario creado exitosamente"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -74,11 +79,7 @@ def create_user(current_user):
 @api.route("/questions", methods=["GET"])
 def list_questions():
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM questions")
-            result = cursor.fetchall()
-        connection.close()
+        result = get_all_questions()
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -90,27 +91,25 @@ def create_question():
     difficulty = data.get('difficulty')
     options = data.get('options')
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO questions (question, difficulty) VALUES (%s, %s)", (question, difficulty))
-            question_id = cursor.lastrowid
-            for option in options:
-                cursor.execute("INSERT INTO options (question_id, option_text, is_correct) VALUES (%s, %s, %s)", 
-                               (question_id, option['option_text'], option['is_correct']))
-            connection.commit()
-        connection.close()
+        create_new_question(question, difficulty, options)
         return jsonify({"message": "Pregunta creada exitosamente"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias", methods=["GET"])
-def list_trivias():
+@token_required
+def list_trivias(current_user):
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM trivias")
-            result = cursor.fetchall()
-        connection.close()
+        result = get_all_trivias()
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@api.route("/trivias/<int:trivia_id>/questions", methods=["GET"])
+@token_required
+def get_trivia_questions_route(current_user, trivia_id):
+    try:
+        result = get_trivia_questions(trivia_id)
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -123,39 +122,8 @@ def create_trivia():
     question_ids = data.get('question_ids')
     user_ids = data.get('user_ids')
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO trivias (name, description) VALUES (%s, %s)", (name, description))
-            trivia_id = cursor.lastrowid
-            for question_id in question_ids:
-                cursor.execute("INSERT INTO trivia_questions (trivia_id, question_id) VALUES (%s, %s)", 
-                               (trivia_id, question_id))
-            for user_id in user_ids:
-                cursor.execute("INSERT INTO trivia_users (trivia_id, user_id) VALUES (%s, %s)", 
-                               (trivia_id, user_id))
-            connection.commit()
-        connection.close()
+        create_new_trivia(name, description, question_ids, user_ids)
         return jsonify({"message": "Trivia creada exitosamente"}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-
-@api.route("/trivias/<int:trivia_id>/users/<int:user_id>", methods=["GET"])
-def get_trivia_for_user(trivia_id, user_id):
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT q.id, q.question, o.id as option_id, o.option_text 
-                FROM trivia_questions tq
-                JOIN questions q ON tq.question_id = q.id
-                JOIN options o ON q.id = o.question_id
-                WHERE tq.trivia_id = %s
-            """, (trivia_id,))
-            result = cursor.fetchall()
-        connection.close()
-        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -164,44 +132,15 @@ def submit_answers(trivia_id, user_id):
     data = request.get_json()
     answers = data.get('answers')  # Lista de respuestas con 'question_id' y 'selected_option_id'
     try:
-        connection = get_connection()
-        score = 0
-        with connection.cursor() as cursor:
-            for answer in answers:
-                cursor.execute("INSERT INTO user_answers (user_id, question_id, selected_option_id) VALUES (%s, %s, %s)", 
-                               (user_id, answer['question_id'], answer['selected_option_id']))
-                cursor.execute("SELECT is_correct, difficulty FROM options o JOIN questions q ON o.question_id = q.id WHERE o.id = %s", 
-                               (answer['selected_option_id'],))
-                result = cursor.fetchone()
-                if result['is_correct']:
-                    if result['difficulty'] == 'easy':
-                        score += 1
-                    elif result['difficulty'] == 'medium':
-                        score += 2
-                    elif result['difficulty'] == 'hard':
-                        score += 3
-            cursor.execute("INSERT INTO user_scores (user_id, trivia_id, score) VALUES (%s, %s, %s) ON DUPLICATE KEY UPDATE score = %s", 
-                           (user_id, trivia_id, score, score))
-            connection.commit()
-        connection.close()
+        score = submit_user_answers(trivia_id, user_id, answers)
         return jsonify({"message": "Respuestas enviadas exitosamente", "score": score}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias/<int:trivia_id>/ranking", methods=["GET"])
-def get_trivia_ranking(trivia_id):
+def get_trivia_ranking_route(trivia_id):
     try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT u.id, u.name, us.score 
-                FROM user_scores us
-                JOIN users u ON us.user_id = u.id
-                WHERE us.trivia_id = %s
-                ORDER BY us.score DESC
-            """, (trivia_id,))
-            result = cursor.fetchall()
-        connection.close()
+        result = get_trivia_ranking(trivia_id)
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
