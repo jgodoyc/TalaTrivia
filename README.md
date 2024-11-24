@@ -65,5 +65,6 @@ El frontend proporciona una interfaz de usuario para interactuar con la API. Inc
 
 - ## Importante! Validaciones para la API
 - Realizar pruebas unitarias
+- Por mejorar la documentacion, se intentó utilizar Flask-RESTx pero la inversion de tiempo era imporante. Se documentó parcialmente con la herramienta Postman
 - Falta agregar mas endpoint, para casos de una aplicacion real, como por ejemplo obtener, borrar, actualizar la puntuacion de una persona para una trivia.
 - Refactorizar el codigo, actualmente está solo en un archivo grande los servicios y las rutas. Se puede mejorar separando por el tipo de objeto, usuario, questions, options (respuestas), trivias
