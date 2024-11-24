@@ -18,7 +18,7 @@ export default function Login() {
       if (role === "admin") {
         navigate("/admin");
       } else {
-        navigate("/");
+        navigate("/home");
       }
     } catch (err) {
       setError("Credenciales inválidas");

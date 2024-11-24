@@ -21,7 +21,7 @@ export default function MenuTrivia({ onSelect }) {
 
   const handleTriviaSelect = (triviaId) => {
     onSelect(triviaId);
-    navigate(`/trivias/${triviaId}`);
+    navigate(`/home/trivias/${triviaId}`);
   };
 
   return (

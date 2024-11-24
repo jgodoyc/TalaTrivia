@@ -2,19 +2,20 @@ import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import MenuTrivia from "./MenuTrivia";
 import TriviaQuestions from "./TriviaQuestions";
-import RankingList from "./RankingList"; // Importa el componente RankingList
+import RankingList from "./RankingList";
+import AdminView from "./AdminView";
 
 export default function Home() {
   const [score, setScore] = useState(null);
-  const [triviaId, setTriviaId] = useState(null); // Estado para almacenar la triviaId
+  const [triviaId, setTriviaId] = useState(null);
   const role = localStorage.getItem("role");
 
   const handleTriviaSubmit = (id) => {
-    setTriviaId(id); // Actualiza la triviaId cuando se envían las respuestas
+    setTriviaId(id);
   };
 
   const handleTriviaSelect = (id) => {
-    setTriviaId(id); // Actualiza la triviaId cuando se selecciona una trivia
+    setTriviaId(id);
   };
 
   return (
@@ -24,17 +25,19 @@ export default function Home() {
       </header>
 
       <main className="text-center mx-auto py-20 grid grid-cols-3 gap-4">
-        <div className="col-span-1">
-          <MenuTrivia onSelect={handleTriviaSelect} />
-        </div>
-        <div className="col-span-1">
-          <Routes>
-            {role === "admin" ? (
-              <Route path="/admin" element={<AdminView />} />
-            ) : (
-              <>
+        {role === "admin" ? (
+          <div className="col-span-3">
+            <AdminView />
+          </div>
+        ) : (
+          <>
+            <div className="col-span-1">
+              <MenuTrivia onSelect={handleTriviaSelect} />
+            </div>
+            <div className="col-span-1">
+              <Routes>
                 <Route
-                  path="/trivias/:triviaId"
+                  path="trivias/:triviaId"
                   element={
                     <TriviaQuestions
                       setScore={setScore}
@@ -42,19 +45,21 @@ export default function Home() {
                     />
                   }
                 />
-              </>
-            )}
-          </Routes>
-        </div>
-        <div className="col-span-1 flex flex-col gap-4">
-          <div>
-            <h2>Puntuación...</h2>
-            {score !== null && <p className="text-2xl font-bold">{score}</p>}
-          </div>
-          <div className="flex-grow overflow-auto">
-            <RankingList triviaId={triviaId} /> {/* Renderiza RankingList */}
-          </div>
-        </div>
+              </Routes>
+            </div>
+            <div className="col-span-1 flex flex-col gap-4">
+              <div>
+                <h2 className="text-2xl font-bold">Puntuación...</h2>
+                {score !== null && (
+                  <p className="text-2xl font-bold">{score}</p>
+                )}
+              </div>
+              <div className="flex-grow overflow-auto">
+                <RankingList triviaId={triviaId} />
+              </div>
+            </div>
+          </>
+        )}
       </main>
     </>
   );

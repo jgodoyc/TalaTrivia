@@ -36,15 +36,15 @@ services:
       - .env
     networks:
       - mired
-  #frontend:
-  #  build:
-  #    context: ./frontend
-  #    dockerfile: Dockerfile
-  #  container_name: frontend
-  #  ports:
-  #    - "3000:80"
-  #  networks:
-  #    - mired
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - mired
 
 networks:
   mired:
