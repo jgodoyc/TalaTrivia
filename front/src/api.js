@@ -23,7 +23,7 @@ export async function login(email, password) {
     throw new Error("Error al iniciar sesión");
   }
   const data = await response.json();
-  return { token: data.token, userId: data.userId };
+  return { token: data.token, userId: data.userId, role: data.role };
 }
 
 export async function getTriviaQuestions(triviaId) {
@@ -59,4 +59,34 @@ export async function submitAnswers(triviaId, answers) {
   }
   const data = await response.json();
   return data.score;
+}
+
+export async function getQuestions() {
+  const response = await fetch("http://localhost:5000/questions", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Error al obtener las preguntas");
+  }
+  return response.json();
+}
+
+export async function updateQuestion(questionId, questionData) {
+  const response = await fetch(
+    `http://localhost:5000/questions/${questionId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(questionData),
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Error al actualizar la pregunta");
+  }
+  return response.json();
 }

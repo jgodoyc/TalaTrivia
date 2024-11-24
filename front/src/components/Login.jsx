@@ -11,10 +11,15 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { token, userId } = await login(email, password);
+      const { token, userId, role } = await login(email, password);
       localStorage.setItem("token", token);
       localStorage.setItem("user_id", userId);
-      navigate("/"); // Redirige a la página principal después de iniciar sesión
+      localStorage.setItem("role", role);
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError("Credenciales inválidas");
     }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTrivias } from "../api";
 
-export default function MenuTrivia() {
+export default function MenuTrivia({ onSelect }) {
   const [trivias, setTrivias] = useState([]);
   const navigate = useNavigate();
 
@@ -20,6 +20,7 @@ export default function MenuTrivia() {
   }, []);
 
   const handleTriviaSelect = (triviaId) => {
+    onSelect(triviaId);
     navigate(`/trivias/${triviaId}`);
   };
 
@@ -29,7 +30,7 @@ export default function MenuTrivia() {
       <ul className="space-y-3 mt-10">
         {trivias.map((trivia) => (
           <button
-            className="block w-full p-2 text-left border rounded hover:bg-teal-300"
+            className="block w-1/2 p-2 text-left border rounded hover:bg-teal-300"
             key={trivia.id}
             onClick={() => handleTriviaSelect(trivia.id)}
           >

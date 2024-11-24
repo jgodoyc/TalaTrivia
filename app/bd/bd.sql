@@ -70,11 +70,10 @@ CREATE TABLE IF NOT EXISTS user_scores (
 
 INSERT INTO users (name, email, password, role) VALUES
 ('Chiki', 'admin@example.com', 'admin', 'admin'),
-('jebus', 'jebus@example.com', 'root', 'player');
+('jebus', 'user@example.com', 'user', 'player');
 
 
 INSERT INTO questions (question, difficulty) VALUES
-('Cúales son los tíldes y caracteres que no conoces ##!@??¿', 'hard'),
 ('¿Cual es la capital de Chile?', 'easy'),
 ('¿Cuanto es la raiz cuadrada de 144?', 'medium'),
 ('¿Quien explica la teoría de la relatividad?', 'hard'),
@@ -82,7 +81,8 @@ INSERT INTO questions (question, difficulty) VALUES
 ('¿En qué año comenzó la Segunda Guerra Mundial?', 'medium'),
 ('¿Quién descubrió América?', 'hard'),
 ('¿Cuál es el planeta más grande del sistema solar?', 'easy'),
-('¿Cuál es la fórmula química del agua?', 'medium');
+('¿Cuál es la fórmula química del agua?', 'medium'),
+('¿De quien fue la teoria de la evolución?', 'hard');
 
 
 INSERT INTO options (question_id, option_text, is_correct) VALUES 
