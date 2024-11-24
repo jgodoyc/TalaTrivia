@@ -8,8 +8,6 @@ dist/
 instance/
 .webassets-cache
 
-.env
-
 venv/
 ENV/
 env/
