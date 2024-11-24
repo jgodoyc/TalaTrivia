@@ -4,7 +4,7 @@ import datetime
 from flask import request, jsonify
 from functools import wraps
 from dotenv import load_dotenv
-from .services import get_user_by_id
+from .services.user_services import get_user_by_id
 
 load_dotenv()
 
@@ -60,3 +60,4 @@ def admin_required(f):
         
         return f(*args, **kwargs)
     return decorated_function
+

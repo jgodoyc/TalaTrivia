@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_restx import Namespace, Resource
 from .auth import generate_token, token_required
 from .db import connection as get_connection
 from .auth import admin_required
@@ -10,27 +11,8 @@ from .services import (
     submit_user_answers, get_trivia_ranking, get_trivia_questions, get_trivias_for_user
 )
 
-api = Blueprint('api', __name__)
-
-def after_request(response):
-    response.headers['Content-Type'] = 'application/json; charset=utf-8'
-    return response
-
-@api.route("/", methods=["GET"])
-def root():
-    return jsonify({"message": "Bienvenido a la Trivia API con Flask"})
-
-@api.route("/test-db", methods=["GET"])
-def test_db():
-    try:
-        connection = get_connection()
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")
-            result = cursor.fetchone()
-        connection.close()
-        return jsonify({"message": "Conexión a la base de datos exitosa", "result": result})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+#api = Blueprint('api', __name__)
+api = Namespace('api', description='Operaciones relacionadas con la API')
 
 @api.route("/login", methods=["POST"])
 def login():
@@ -203,7 +185,7 @@ def create_trivia():
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias/<int:trivia_id>/users/<int:user_id>/answers", methods=["POST"])
-@admin_required
+#@admin_required
 def submit_answers(trivia_id, user_id):
     data = request.get_json()
     answers = data.get('answers')
