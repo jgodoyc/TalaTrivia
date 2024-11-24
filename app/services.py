@@ -4,7 +4,7 @@ from .db import connection as get_connection
 def get_all_users():
     connection = get_connection()
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT id, name, email, role FROM users")
         result = cursor.fetchall()
     connection.close()
     return result
@@ -93,6 +93,19 @@ def get_all_trivias():
     connection.close()
     return result
 
+def get_trivias_for_user(user_id):
+    connection = get_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT t.id, t.name, t.description
+            FROM trivias t
+            JOIN trivia_users tu ON t.id = tu.trivia_id
+            WHERE tu.user_id = %s
+        """, (user_id,))
+        result = cursor.fetchall()
+    connection.close()
+    return result
+
 def get_trivia_questions(trivia_id):
     connection = get_connection()
     questions = {}
@@ -104,7 +117,7 @@ def get_trivia_questions(trivia_id):
             JOIN questions q ON tq.question_id = q.id
             JOIN options o ON q.id = o.question_id
             WHERE tq.trivia_id = %s
-            ORDER BY q.id, RAND()
+            ORDER BY RAND()
         """, (trivia_id,))
         result = cursor.fetchall()
         

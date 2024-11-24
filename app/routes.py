@@ -1,17 +1,14 @@
 from flask import Blueprint, jsonify, request
 from .auth import generate_token, token_required
 from .db import connection as get_connection
+from .auth import admin_required
 from .services import (
     get_all_users, create_new_user, get_user_by_id, update_user_by_id, delete_user_by_id,
     get_all_questions, create_new_question, get_question_by_id, update_question_by_id, delete_question_by_id,
     get_all_trivias, create_new_trivia, get_trivia_by_id, update_trivia_by_id, delete_trivia_by_id,
     get_all_questions, create_new_question, get_option_by_id, update_option_by_id, delete_option_by_id,
-    submit_user_answers, get_trivia_ranking, get_trivia_questions
+    submit_user_answers, get_trivia_ranking, get_trivia_questions, get_trivias_for_user
 )
-import logging
-
-# Configurar el logger
-logging.basicConfig(level=logging.INFO)
 
 api = Blueprint('api', __name__)
 
@@ -120,6 +117,7 @@ def list_questions():
         return jsonify({"error": str(e)}), 500
 
 @api.route("/questions", methods=["POST"])
+@admin_required
 def create_question():
     data = request.get_json()
     question = data.get('question')
@@ -140,6 +138,7 @@ def get_question(question_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/questions/<int:question_id>", methods=["PUT"])
+@admin_required
 def update_question(question_id):
     data = request.get_json()
     question = data.get('question')
@@ -152,6 +151,7 @@ def update_question(question_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/questions/<int:question_id>", methods=["DELETE"])
+@admin_required
 def delete_question(question_id):
     try:
         delete_question_by_id(question_id)
@@ -169,6 +169,15 @@ def list_trivias(current_user):
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@api.route("/users/<int:user_id>/trivias", methods=["GET"])
+@token_required
+def list_trivias_for_user(current_user, user_id):
+    try:
+        result = get_trivias_for_user(user_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias/<int:trivia_id>/questions", methods=["GET"])
 @token_required
@@ -180,6 +189,7 @@ def get_trivia_questions_route(current_user, trivia_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias", methods=["POST"])
+@admin_required
 def create_trivia():
     data = request.get_json()
     name = data.get('name')
@@ -193,6 +203,7 @@ def create_trivia():
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias/<int:trivia_id>/users/<int:user_id>/answers", methods=["POST"])
+@admin_required
 def submit_answers(trivia_id, user_id):
     data = request.get_json()
     answers = data.get('answers')
@@ -219,6 +230,7 @@ def get_trivia(trivia_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias/<int:trivia_id>", methods=["PUT"])
+@admin_required
 def update_trivia(trivia_id):
     data = request.get_json()
     name = data.get('name')
@@ -232,6 +244,7 @@ def update_trivia(trivia_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/trivias/<int:trivia_id>", methods=["DELETE"])
+@admin_required
 def delete_trivia(trivia_id):
     try:
         delete_trivia_by_id(trivia_id)
@@ -250,6 +263,7 @@ def get_option(option_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/options/<int:option_id>", methods=["PUT"])
+@admin_required
 def update_option(option_id):
     data = request.get_json()
     option_text = data.get('option_text')
@@ -261,6 +275,7 @@ def update_option(option_id):
         return jsonify({"error": str(e)}), 500
 
 @api.route("/options/<int:option_id>", methods=["DELETE"])
+@admin_required
 def delete_option(option_id):
     try:
         delete_option_by_id(option_id)

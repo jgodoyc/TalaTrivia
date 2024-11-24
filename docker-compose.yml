@@ -11,9 +11,12 @@ services:
     depends_on:
       - db
     volumes:
-      - .:/app
+      - ./app:/app
     env_file:
       - .env
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
   db:
     image: mysql:8.0
     restart: always
@@ -26,6 +29,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
       - ./app/bd/bd.sql:/docker-entrypoint-initdb.d/bd.sql
       - db_data:/var/lib/mysql
     env_file:

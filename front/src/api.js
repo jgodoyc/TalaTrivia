@@ -90,3 +90,33 @@ export async function updateQuestion(questionId, questionData) {
   }
   return response.json();
 }
+
+export async function createTrivia(triviaData) {
+  const response = await fetch("http://localhost:5000/trivias", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(triviaData),
+  });
+  if (!response.ok) {
+    throw new Error("Error al crear la trivia");
+  }
+  return response.json();
+}
+
+export async function updateTrivia(triviaId, triviaData) {
+  const response = await fetch(`http://localhost:5000/trivias/${triviaId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(triviaData),
+  });
+  if (!response.ok) {
+    throw new Error("Error al actualizar la trivia");
+  }
+  return response.json();
+}
