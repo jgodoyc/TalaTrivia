@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from flask_restx import Namespace, Resource
 from .auth import generate_token, token_required
 from .db import connection as get_connection
 from .auth import admin_required
@@ -8,11 +7,10 @@ from .services import (
     get_all_questions, create_new_question, get_question_by_id, update_question_by_id, delete_question_by_id,
     get_all_trivias, create_new_trivia, get_trivia_by_id, update_trivia_by_id, delete_trivia_by_id,
     get_all_questions, create_new_question, get_option_by_id, update_option_by_id, delete_option_by_id,
-    submit_user_answers, get_trivia_ranking, get_trivia_questions, get_trivias_for_user
+    submit_user_answers, get_trivia_ranking, get_trivia_questions, get_trivias_for_user, get_options_by_question_id, delete_user_answers, get_user_answers, update_user_answers
 )
 
-#api = Blueprint('api', __name__)
-api = Namespace('api', description='Operaciones relacionadas con la API')
+api = Blueprint('api', __name__)
 
 @api.route("/login", methods=["POST"])
 def login():
@@ -51,9 +49,10 @@ def create_user(current_user):
     data = request.get_json()
     name = data.get('name')
     email = data.get('email')
+    password = data.get('password')
     role = data.get('role', 'jugador')
     try:
-        create_new_user(name, email, role)
+        create_new_user(name, email, password, role)
         return jsonify({"message": "Usuario creado exitosamente"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -73,9 +72,10 @@ def update_user(current_user, user_id):
     data = request.get_json()
     name = data.get('name')
     email = data.get('email')
+    password = data.get('password')
     role = data.get('role')
     try:
-        update_user_by_id(user_id, name, email, role)
+        update_user_by_id(user_id, name, password, email, role)
         return jsonify({"message": "Usuario actualizado exitosamente"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -264,3 +264,43 @@ def delete_option(option_id):
         return jsonify({"message": "Opción eliminada exitosamente"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+#Nuevos endpoints
+@api.route("/questions/<int:question_id>/options", methods=["GET"])
+def get_question_options(question_id):
+    try:
+        result = get_options_by_question_id(question_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@api.route("/trivias/<int:trivia_id>/users/<int:user_id>/answers", methods=["DELETE"])
+@token_required
+def delete_user_answers(current_user, trivia_id, user_id):
+    try:
+        delete_user_answers(trivia_id, user_id)
+        return jsonify({"message": "Respuestas eliminadas exitosamente"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+"""@api.route("/trivias/<int:trivia_id>/users/<int:user_id>/answers", methods=["GET"])
+@token_required
+def get_user_answers(current_user, trivia_id, user_id):
+    try:
+        result = get_user_answers(trivia_id, user_id)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@api.route("/trivias/<int:trivia_id>/users/<int:user_id>/answers", methods=["PUT"])
+@token_required
+def update_user_answers(current_user, trivia_id, user_id):
+    data = request.get_json()
+    answers = data.get('answers')
+    try:
+        update_user_answers(trivia_id, user_id, answers)
+        return jsonify({"message": "Respuestas actualizadas exitosamente"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+"""

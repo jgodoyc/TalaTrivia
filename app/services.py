@@ -9,10 +9,10 @@ def get_all_users():
     connection.close()
     return result
 
-def create_new_user(name, email, role):
+def create_new_user(name, email, password, role):
     connection = get_connection()
     with connection.cursor() as cursor:
-        cursor.execute("INSERT INTO users (name, email, role) VALUES (%s, %s, %s)", (name, email, role))
+        cursor.execute("INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s)", (name, email, password, role))
         connection.commit()
     connection.close()
     
@@ -24,10 +24,10 @@ def get_user_by_id(user_id):
     connection.close()
     return result
 
-def update_user_by_id(user_id, name, email, role):
+def update_user_by_id(user_id, name, password, email, role):
     connection = get_connection()
     with connection.cursor() as cursor:
-        cursor.execute("UPDATE users SET name = %s, email = %s, role = %s WHERE id = %s", (name, email, role, user_id))
+        cursor.execute("UPDATE users SET name = %s, password = %s, email = %s, role = %s WHERE id = %s", (name, password, email, role, user_id))
         connection.commit()
     connection.close()
 
@@ -244,3 +244,51 @@ def get_trivia_ranking(trivia_id):
         result = cursor.fetchall()
     connection.close()
     return result
+
+#nuevos
+def get_options_by_question_id(question_id):
+    connection = get_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM options WHERE question_id = %s", (question_id,))
+        result = cursor.fetchall()
+    connection.close()
+    return result
+
+def get_options_by_question_id(question_id):
+    connection = get_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM options WHERE question_id = %s", (question_id,))
+        result = cursor.fetchall()
+    connection.close()
+    return result
+
+def delete_user_answers(trivia_id, user_id):
+    connection = get_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM user_answers WHERE user_id = %s AND trivia_id = %s", (user_id, trivia_id))
+        connection.commit()
+    connection.close()
+    
+def get_user_answers(trivia_id, user_id):
+    connection = get_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT ua.question_id, ua.selected_option_id, o.option_text, o.is_correct
+            FROM user_answers ua
+            JOIN trivia_questions tq ON ua.question_id = tq.question_id
+            JOIN options o ON ua.selected_option_id = o.id
+            WHERE ua.user_id = %s AND tq.trivia_id = %s
+        """, (user_id, trivia_id))
+        result = cursor.fetchall()
+    connection.close()
+    return result
+
+def update_user_answers(trivia_id, user_id, answers):
+    connection = get_connection()
+    with connection.cursor() as cursor:
+        cursor.execute("DELETE FROM user_answers WHERE user_id = %s AND trivia_id = %s", (user_id, trivia_id))
+        for answer in answers:
+            cursor.execute("INSERT INTO user_answers (user_id, question_id, selected_option_id) VALUES (%s, %s, %s)", 
+                           (user_id, answer['question_id'], answer['selected_option_id']))
+        connection.commit()
+    connection.close()

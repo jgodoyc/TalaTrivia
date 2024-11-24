@@ -12,7 +12,6 @@ DB_PORT = int(os.getenv('MYSQL_PORT'))
 DB_CHARSET = os.getenv('MYSQL_DATABASE_CHARSET')
 
 def connection():
-    """Crea y devuelve una conexión a la base de datos MySQL."""
     connection = pymysql.connect(
         host=DB_HOST,
         user=DB_USER,

@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS questions (
     difficulty ENUM('easy', 'medium', 'hard') NOT NULL
 ) DEFAULT CHARSET=utf8mb4;
 
-
 CREATE TABLE IF NOT EXISTS options (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question_id INT NOT NULL,
@@ -21,13 +20,11 @@ CREATE TABLE IF NOT EXISTS options (
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE IF NOT EXISTS trivias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT
 );
-
 
 CREATE TABLE IF NOT EXISTS trivia_questions (
     trivia_id INT NOT NULL,
@@ -37,7 +34,6 @@ CREATE TABLE IF NOT EXISTS trivia_questions (
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE IF NOT EXISTS trivia_users (
     trivia_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -45,7 +41,6 @@ CREATE TABLE IF NOT EXISTS trivia_users (
     FOREIGN KEY (trivia_id) REFERENCES trivias(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE IF NOT EXISTS user_answers (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,7 +52,6 @@ CREATE TABLE IF NOT EXISTS user_answers (
     FOREIGN KEY (selected_option_id) REFERENCES options(id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE IF NOT EXISTS user_scores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -67,75 +61,72 @@ CREATE TABLE IF NOT EXISTS user_scores (
     FOREIGN KEY (trivia_id) REFERENCES trivias(id) ON DELETE CASCADE
 );
 
-
 INSERT INTO users (name, email, password, role) VALUES
-('Chiki', 'admin@example.com', 'admin', 'admin'),
-('jebus', 'user@example.com', 'user', 'player');
-
+('Admin', 'admin@example.com', 'admin', 'admin'),
+('Natalia', 'natalia@example.com', 'natalia', 'player'),
+('User', 'user@example.com', 'user', 'player');
 
 INSERT INTO questions (question, difficulty) VALUES
-('¿Cual es la capital de Chile?', 'easy'),
-('¿Cuanto es la raiz cuadrada de 144?', 'medium'),
-('¿Quien explica la teoría de la relatividad?', 'hard'),
-('¿Quién fue el primer presidente de los Estados Unidos?', 'easy'),
-('¿En qué año comenzó la Segunda Guerra Mundial?', 'medium'),
-('¿Quién descubrió América?', 'hard'),
-('¿Cuál es el planeta más grande del sistema solar?', 'easy'),
-('¿Cuál es la fórmula química del agua?', 'medium'),
-('¿De quien fue la teoria de la evolución?', 'hard');
-
+('Cual es el proceso de seleccion de personal?', 'easy'),
+('Que documentos se requieren para la contratacion?', 'medium'),
+('Cuales son los beneficios de los empleados?', 'hard'),
+('Que es una evaluacion de desempeño?', 'easy'),
+('Cuales son las politicas de vacaciones?', 'medium'),
+('Como se maneja el ausentismo?', 'hard'),
+('Que es el onboarding?', 'easy'),
+('Cuales son las politicas de seguridad en el trabajo?', 'medium'),
+('Que es el plan de carrera?', 'hard');
 
 INSERT INTO options (question_id, option_text, is_correct) VALUES 
-(1, 'Santiago', TRUE),
-(1, 'Valdivia', FALSE),
-(1, 'Lima', FALSE),
-(1, 'Buenos Aires', FALSE),
+(1, 'Entrevista, prueba tecnica, entrevista final', TRUE),
+(1, 'Solo entrevista', FALSE),
+(1, 'Prueba tecnica y entrevista final', FALSE),
+(1, 'Entrevista inicial y final', FALSE),
 
-(2, '10', FALSE),
-(2, '12', TRUE),
-(2, '14', FALSE),
-(2, '16', FALSE),
+(2, 'Identificacion, contrato firmado, referencias', TRUE),
+(2, 'Solo identificacion', FALSE),
+(2, 'Contrato firmado y referencias', FALSE),
+(2, 'Identificacion y contrato firmado', FALSE),
 
-(3, 'Es una teoria de Einstein', TRUE),
-(3, 'Es una teoria de Newton', FALSE),
-(3, 'Es una teoria de Galileo', FALSE),
-(3, 'Es una teoria de Tesla', FALSE),
+(3, 'Seguro medico, vacaciones, bonos', TRUE),
+(3, 'Solo seguro medico', FALSE),
+(3, 'Vacaciones y bonos', FALSE),
+(3, 'Seguro medico y vacaciones', FALSE),
 
-(4, 'George Washington', TRUE),
-(4, 'Thomas Jefferson', FALSE),
-(4, 'Abraham Lincoln', FALSE),
-(4, 'John Adams', FALSE),
+(4, 'Evaluacion del rendimiento del empleado', TRUE),
+(4, 'Evaluacion de la empresa', FALSE),
+(4, 'Evaluacion de los clientes', FALSE),
+(4, 'Evaluacion de los proveedores', FALSE),
 
-(5, '1939', TRUE),
-(5, '1941', FALSE),
-(5, '1935', FALSE),
-(5, '1945', FALSE),
+(5, 'Dias libres pagados segun antiguedad', TRUE),
+(5, 'Dias libres no pagados', FALSE),
+(5, 'Dias libres pagados sin importar antiguedad', FALSE),
+(5, 'No hay politicas de vacaciones', FALSE),
 
-(6, 'Cristóbal Colón', TRUE),
-(6, 'Vasco da Gama', FALSE),
-(6, 'Fernando de Magallanes', FALSE),
-(6, 'Hernán Cortés', FALSE),
+(6, 'Registro y seguimiento de ausencias', TRUE),
+(6, 'No se maneja', FALSE),
+(6, 'Solo registro de ausencias', FALSE),
+(6, 'Solo seguimiento de ausencias', FALSE),
 
-(7, 'Júpiter', TRUE),
-(7, 'Saturno', FALSE),
-(7, 'Marte', FALSE),
-(7, 'Tierra', FALSE),
+(7, 'Proceso de integracion de nuevos empleados', TRUE),
+(7, 'Proceso de seleccion de personal', FALSE),
+(7, 'Proceso de evaluacion de desempeño', FALSE),
+(7, 'Proceso de capacitacion', FALSE),
 
-(8, 'H2O', TRUE),
-(8, 'CO2', FALSE),
-(8, 'O2', FALSE),
-(8, 'H2', FALSE),
+(8, 'Normas y procedimientos para la seguridad', TRUE),
+(8, 'Normas de conducta', FALSE),
+(8, 'Politicas de vacaciones', FALSE),
+(8, 'Politicas de ausentismo', FALSE),
 
-(9, 'Charles Darwin', TRUE),
-(9, 'Isaac Newton', FALSE),
-(9, 'Albert Einstein', FALSE),
-(9, 'Galileo Galilei', FALSE);
+(9, 'Plan de desarrollo profesional', TRUE),
+(9, 'Plan de evaluacion de desempeño', FALSE),
+(9, 'Plan de capacitacion', FALSE),
+(9, 'Plan de seleccion de personal', FALSE);
 
 INSERT INTO trivias (name, description) VALUES
-('Conocimientos generales', 'Una trivia para probar tus conocimientos generales.'), 
-('Historia', 'Trivia sobre eventos históricos importantes.'),
-('Ciencia', 'Trivia sobre conceptos científicos básicos.');
-
+('Recursos Humanos Basico', 'Trivia sobre conceptos basicos de recursos humanos.'), 
+('Politicas de la Empresa', 'Trivia sobre las politicas internas de la empresa.'),
+('Desarrollo Profesional', 'Trivia sobre el desarrollo profesional en la empresa.');
 
 INSERT INTO trivia_questions (trivia_id, question_id) VALUES 
 (1, 1),
@@ -148,18 +139,15 @@ INSERT INTO trivia_questions (trivia_id, question_id) VALUES
 (3, 8),
 (3, 9);
 
-
 INSERT INTO trivia_users (trivia_id, user_id) VALUES 
 (1, 1),
 (2, 1),
 (3, 1);
 
-
 INSERT INTO user_answers (user_id, question_id, selected_option_id) VALUES 
 (1, 1, 1), 
-(1, 2, 6),  
-(1, 3, 9);  
-
+(1, 2, 2),  
+(1, 3, 3);  
 
 INSERT INTO user_scores (user_id, trivia_id, score) VALUES 
-(1, 1, 6);  
+(1, 1, 6);
