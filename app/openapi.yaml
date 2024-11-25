@@ -1,0 +1,475 @@
+openapi: 3.0.0
+info:
+  title: TalaTrivia API
+  version: 1.0.0
+  description: API para gestionar trivias y usuarios en TalaTrivia.
+servers:
+  - url: http://localhost:5000
+paths:
+  /login:
+    post:
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  userId:
+                    type: integer
+                  role:
+                    type: string
+        "400":
+          description: Email y contraseña son requeridos
+        "401":
+          description: Credenciales inválidas
+        "500":
+          description: Error del servidor
+
+  /users:
+    get:
+      summary: Obtener todos los usuarios
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          description: Error del servidor
+    post:
+      summary: Crear un nuevo usuario
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "201":
+          description: Usuario creado exitosamente
+        "400":
+          description: Nombre, email y contraseña son requeridos
+        "500":
+          description: Error del servidor
+
+  /users/{user_id}:
+    get:
+      summary: Obtener un usuario por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error del servidor
+    put:
+      summary: Actualizar un usuario por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: Usuario actualizado exitosamente
+        "400":
+          description: Nombre, email y contraseña son requeridos
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error del servidor
+    delete:
+      summary: Eliminar un usuario por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuario eliminado exitosamente
+        "404":
+          description: Usuario no encontrado
+        "500":
+          description: Error del servidor
+
+  /trivias:
+    get:
+      summary: Obtener todas las trivias
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de trivias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trivia"
+        "500":
+          description: Error del servidor
+    post:
+      summary: Crear una nueva trivia
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Trivia"
+      responses:
+        "201":
+          description: Trivia creada exitosamente
+        "400":
+          description: Nombre, descripción, preguntas y usuarios son requeridos
+        "500":
+          description: Error del servidor
+
+  /trivias/{trivia_id}:
+    get:
+      summary: Obtener una trivia por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: trivia_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Trivia encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Trivia"
+        "404":
+          description: Trivia no encontrada
+        "500":
+          description: Error del servidor
+    put:
+      summary: Actualizar una trivia por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: trivia_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Trivia"
+      responses:
+        "200":
+          description: Trivia actualizada exitosamente
+        "400":
+          description: Nombre, descripción, preguntas y usuarios son requeridos
+        "404":
+          description: Trivia no encontrada
+        "500":
+          description: Error del servidor
+    delete:
+      summary: Eliminar una trivia por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: trivia_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Trivia eliminada exitosamente
+        "404":
+          description: Trivia no encontrada
+        "500":
+          description: Error del servidor
+
+  /questions:
+    get:
+      summary: Obtener todas las preguntas
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de preguntas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Question"
+        "500":
+          description: Error del servidor
+    post:
+      summary: Crear una nueva pregunta
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Question"
+      responses:
+        "201":
+          description: Pregunta creada exitosamente
+        "400":
+          description: Pregunta, dificultad y opciones son requeridos
+        "500":
+          description: Error del servidor
+
+  /questions/{question_id}:
+    get:
+      summary: Obtener una pregunta por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: question_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pregunta encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+        "404":
+          description: Pregunta no encontrada
+        "500":
+          description: Error del servidor
+    put:
+      summary: Actualizar una pregunta por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: question_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Question"
+      responses:
+        "200":
+          description: Pregunta actualizada exitosamente
+        "400":
+          description: Pregunta, dificultad y opciones son requeridos
+        "404":
+          description: Pregunta no encontrada
+        "500":
+          description: Error del servidor
+    delete:
+      summary: Eliminar una pregunta por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: question_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pregunta eliminada exitosamente
+        "404":
+          description: Pregunta no encontrada
+        "500":
+          description: Error del servidor
+
+  /options/{option_id}:
+    get:
+      summary: Obtener una opción por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: option_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Opción encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Option"
+        "404":
+          description: Opción no encontrada
+        "500":
+          description: Error del servidor
+    put:
+      summary: Actualizar una opción por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: option_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Option"
+      responses:
+        "200":
+          description: Opción actualizada exitosamente
+        "400":
+          description: Texto de la opción y si es correcta son requeridos
+        "404":
+          description: Opción no encontrada
+        "500":
+          description: Error del servidor
+    delete:
+      summary: Eliminar una opción por ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: option_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Opción eliminada exitosamente
+        "404":
+          description: Opción no encontrada
+        "500":
+          description: Error del servidor
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          default: jugador
+
+    Trivia:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+        description:
+          type: string
+        question_ids:
+          type: array
+          items:
+            type: integer
+        user_ids:
+          type: array
+          items:
+            type: integer
+
+    Question:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question:
+          type: string
+        difficulty:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/Option"
+
+    Option:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question_id:
+          type: integer
+        option_text:
+          type: string
+        is_correct:
+          type: boolean
+
+securitySchemes:
+  bearerAuth:
+    type: http
+    scheme: bearer
+    bearerFormat: JWT
