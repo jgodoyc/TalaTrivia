@@ -4,7 +4,7 @@ import datetime
 from flask import request, jsonify
 from functools import wraps
 from dotenv import load_dotenv
-from .services import get_user_by_id
+from .services.user_service import get_user_by_id
 
 load_dotenv()
 
