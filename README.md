@@ -10,7 +10,7 @@ TalaTrivia es una aplicación web para gestionar trivias y usuarios. La aplicaci
 - Gestión de preguntas y opciones (crear, actualizar, eliminar).
 - Envío y evaluación de respuestas de trivias.
 - Visualización de rankings de trivias.
-- Documentación de API con flask-swagger-ui.
+- Documentación de API con flask-swagger-ui (para rama V2).
 
 ## Requisitos
 
@@ -42,7 +42,9 @@ TalaTrivia es una aplicación web para gestionar trivias y usuarios. La aplicaci
 
 3. La aplicación estará disponible en `http://localhost:3000` para el frontend y `http://localhost:5000` para la API.
 
-4. Para acceder a la documentación de la API, este se encontrará en `http://localhost:5000/swagger/`
+4. Para acceder a la documentacion de la rama main: ## Link documentacion: `https://documenter.getpostman.com/view/18045846/2sAYBUDsEi`.
+
+Para acceder a la documentación de la API en la rama V2, este se encontrará en `http://localhost:5000/swagger/`
 
 ## Uso
 
@@ -73,8 +75,8 @@ El frontend proporciona una interfaz de usuario para interactuar con la API. Inc
 
 ### Pendientes
 
-- ~~Importante! Validaciones para la API~~
+- **_Validaciones para la API_**
 - Realizar pruebas unitarias
-- ~~Por mejorar la documentacion, se intentó utilizar Flask-RESTx pero la inversion de tiempo era imporante. Se documentó parcialmente con la herramienta Postman~~
+- **_Por mejorar la documentacion, se intentó utilizar Flask-RESTx pero la inversion de tiempo era imporante. Se documentó parcialmente con la herramienta Postman_**
 - Falta agregar mas endpoint, para casos de una aplicacion real, como por ejemplo obtener, borrar, actualizar la puntuacion de una persona para una trivia.
-- ~~Refactorizar el codigo, actualmente está solo en un archivo grande los servicios y las rutas. Se puede mejorar separando por el tipo de objeto, usuario, questions, options (respuestas), trivias~~
+- Refactorizar el codigo, actualmente está solo en un archivo grande los servicios y las rutas. Se puede mejorar separando por el tipo de objeto, usuario, questions, options (respuestas), trivias
