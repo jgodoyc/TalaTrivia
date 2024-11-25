@@ -26,6 +26,14 @@ TalaTrivia es una aplicación web para gestionar trivias y usuarios. La aplicaci
    cd TalaTrivia
    ```
 
+   - o si quieren ver las nuevas funcionalidades, moverse a la rama v2-
+
+   ```sh
+   git clone https://github.com/jgodoyc/TalaTrivia.git
+   cd TalaTrivia
+   git checkout v2
+   ```
+
 2. Construye y levanta los contenedores de Docker:
 
    ```sh
