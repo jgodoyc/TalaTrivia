@@ -59,7 +59,7 @@ El frontend proporciona una interfaz de usuario para interactuar con la API. Inc
 
 - **Inicio**: Muestra una lista de trivias disponibles.
 - **Login**: Permite a los usuarios iniciar sesión.
-- **Admin**: Permite a los administradores gestionar trivias, preguntas y usuarios. _En construccion_
+- **Admin**: _Pendiente_ Permite a los administradores gestionar trivias, preguntas y usuarios.
 - **Users** Permite a los jugadores interacturar con las trivias y preguntas.
 
 ### Pendientes
