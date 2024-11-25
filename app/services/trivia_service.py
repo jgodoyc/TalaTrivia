@@ -129,11 +129,12 @@ def get_trivia_ranking(trivia_id):
     try:
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT u.name, us.score
-                FROM user_scores us
-                JOIN users u ON us.user_id = u.id
-                WHERE us.trivia_id = %s
-                ORDER BY us.score DESC
+            SELECT u.id, u.name, MAX(us.score) as score
+            FROM user_scores us
+            JOIN users u ON us.user_id = u.id
+            WHERE us.trivia_id = %s
+            GROUP BY u.id, u.name
+            ORDER BY score DESC
             """, (trivia_id,))
             result = cursor.fetchall()
         return result
